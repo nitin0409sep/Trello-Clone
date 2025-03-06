@@ -30,7 +30,7 @@ const Cards = () => {
 
   function handleCardNameEdit(id: number) {
     if (!id || !cardNameRef.current?.value) {
-      alert("Id and name of card are required.");
+      showToast("error", "Id and name of card are required.");
       return;
     }
 
@@ -115,7 +115,7 @@ const Cards = () => {
     const trimmedValue = cardValue.trim();
 
     if (!trimmedValue) {
-      alert("Card Name can't be empty");
+      showToast("error", "Card Name can't be empty");
       return;
     }
 
