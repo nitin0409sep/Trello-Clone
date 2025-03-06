@@ -41,16 +41,18 @@ const Cards = () => {
           : card
       )
     );
+
+    showToast("success", "Card Name Updated Successfully");
   }
 
   function handleItemEdit(id: number, itemIdx: number) {
     if (!id || itemIdx === undefined) {
-      alert("Card Id and Item Idx are required");
+      showToast("error", "Card Id and Item Idx are required");
       return;
     }
 
     if (!itemNameRef.current?.value) {
-      alert("Item Name can't be empty");
+      showToast("error", "Item Name can't be empty");
       return;
     }
 
@@ -62,12 +64,14 @@ const Cards = () => {
       )
     );
 
+    showToast("success", "Item updated successfully");
+
     setCardId(-1);
   }
 
   function handleDeleteCardItem(itemId: number, cardId: number) {
     if (itemId === undefined || cardId === undefined) {
-      alert("Card Id and Item Idx are required");
+      showToast("error", "Card Id and Item Idx are required");
       return;
     }
 
@@ -79,17 +83,18 @@ const Cards = () => {
       )
     );
 
+    showToast("success", "Card Deleted Successfully");
     setCardId(-1);
   }
 
   function handleAddCardItem(itemValue: string) {
     if (cardId === undefined) {
-      alert("Card Id is required");
+      showToast("error", "Card Id is required");
       return;
     }
 
     if (!itemValue) {
-      alert("Item Value can't be empty");
+      showToast("error", "Item Value can't be empty");
       return;
     }
 
@@ -100,6 +105,8 @@ const Cards = () => {
           : card
       )
     );
+
+    showToast("success", "Item Added Successfully");
 
     setCardId(-1);
   }
@@ -120,6 +127,8 @@ const Cards = () => {
         items: [],
       },
     ]);
+
+    showToast("success", "Card Added Successfully");
   }
 
   function logout() {
