@@ -1,18 +1,10 @@
 import { useRef, useState } from "react";
 import Item from "./Item";
 import { AddItemDialog } from "./AddItemDialog";
+import { Card } from "../interface/Card.interface";
 
 const CardList = () => {
-  const [cards, setCards] = useState([
-    { id: 1, name: "Card 1", items: ["Item 1", "Item 2", "Item 3", "Item 4"] },
-    { id: 2, name: "Card 2", items: ["Item A", "Item B"] },
-    {
-      id: 3,
-      name: "Card 3",
-      items: ["Item X", "Item Y", "Item Z"],
-    },
-    { id: 4, name: "Card 4", items: ["Item Alpha", "Item Beta"] },
-  ]);
+  const [cards, setCards] = useState<Card[] | []>([]);
 
   const [cardId, setCardId] = useState(-1);
   const [editCardName, setEditCardName] = useState(false);
@@ -116,7 +108,7 @@ const CardList = () => {
     setCards((prevCards) => [
       ...prevCards,
       {
-        id: cards.length + 1,
+        id: prevCards.length + 1,
         name: trimmedValue,
         items: [],
       },
@@ -125,56 +117,54 @@ const CardList = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <h1 className="text-center p-3 text-2xl font-mono underline decoration-wavy underline-offset-4">To Do</h1>
+      <h1 className="text-center p-3 text-2xl font-mono underline decoration-wavy underline-offset-4 text-gray-600">
+        Trello
+      </h1>
+
+      {!cards?.length && (
+        <div className="text-center flex items-center justify-center h-full w-full text-4xl font-mono text-gray-600">
+          No Cards Found
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 overflow-auto flex-grow">
-        {cards.map((card) => (
-          <div
-            key={card.id}
-            className="bg-white shadow-lg rounded-xl p-6 flex flex-col h-96"
-          >
-            <Item
-              {...{
-                setCardId,
-                setEditCardName,
-                setEditCardItem,
-                setItemId,
-                card,
-                editCardName,
-                editCardItem,
-                cardId,
-                itemId,
-                handleCardNameEdit,
-                handleItemEdit,
-                handleDeleteCardItem,
-                cardNameRef,
-                itemNameRef,
-              }}
-            />
-
-            <button
-              className="mt-4 w-full px-4 py-2 bg-purple-500 text-white rounded-lg shadow hover:bg-purple-600"
-              onClick={() => {
-                setOpen(true);
-                setCardId(card.id);
-                setIsAddItem(true);
-              }}
+        {cards &&
+          cards.map((card) => (
+            <div
+              key={card.id}
+              className="bg-white shadow-lg rounded-xl p-6 flex flex-col h-96"
             >
-              Add Item
-            </button>
+              <Item
+                {...{
+                  setCardId,
+                  setEditCardName,
+                  setEditCardItem,
+                  setItemId,
+                  card,
+                  editCardName,
+                  editCardItem,
+                  cardId,
+                  itemId,
+                  handleCardNameEdit,
+                  handleItemEdit,
+                  handleDeleteCardItem,
+                  cardNameRef,
+                  itemNameRef,
+                }}
+              />
 
-            <AddItemDialog
-              {...{
-                open,
-                setOpen,
-                handleClose,
-                handleAddCardItem,
-                handleAddCard,
-                isAddItem,
-              }}
-            />
-          </div>
-        ))}
+              <button
+                className="mt-4 w-full px-4 py-2 bg-purple-500 text-white rounded-lg shadow hover:bg-purple-600"
+                onClick={() => {
+                  setOpen(true);
+                  setCardId(card.id);
+                  setIsAddItem(true);
+                }}
+              >
+                Add Item
+              </button>
+            </div>
+          ))}
       </div>
 
       <div className="w-full bg-white p-6 shadow-lg flex justify-center">
@@ -188,6 +178,17 @@ const CardList = () => {
           Add Card
         </button>
       </div>
+
+      <AddItemDialog
+        {...{
+          open,
+          setOpen,
+          handleClose,
+          handleAddCardItem,
+          handleAddCard,
+          isAddItem,
+        }}
+      />
     </div>
   );
 };
