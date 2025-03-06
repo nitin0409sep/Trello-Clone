@@ -30,7 +30,7 @@ const Cards = () => {
 
   function handleCardNameEdit(id: number) {
     if (!id || !cardNameRef.current?.value) {
-      showToast("error", "Id and name of card are required.");
+      showToast("error", "Name of card are required.");
       return;
     }
 
