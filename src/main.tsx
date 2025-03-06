@@ -4,6 +4,8 @@ import { RouterProvider } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { router } from "./routes/route.tsx";
 import { AuthProvider } from "./context/auth.context.tsx";
+import "remixicon/fonts/remixicon.css";
+
 
 createRoot(document.getElementById("root")!).render(
   <>

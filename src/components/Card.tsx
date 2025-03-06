@@ -2,6 +2,9 @@ import { useRef, useState } from "react";
 import Item from "./Item";
 import { AddItemDialog } from "./AddItemDialog";
 import { Card } from "../interface/Card.interface";
+import { showToast } from "../utility/toast";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../context/auth.context";
 
 const Cards = () => {
   const [cards, setCards] = useState<Card[] | []>([]);
@@ -16,6 +19,10 @@ const Cards = () => {
   const [open, setOpen] = useState(false);
 
   const [isAddItem, setIsAddItem] = useState(false);
+
+  const navigate = useNavigate();
+
+  const { setIsLoggedIn } = useAuthContext();
 
   const handleClose = () => {
     setOpen(false);
@@ -115,11 +122,24 @@ const Cards = () => {
     ]);
   }
 
+  function logout() {
+    localStorage.clear();
+    setIsLoggedIn(false);
+    showToast("success", "You Logged Out Successfully");
+    navigate("auth/login");
+  }
+
   return (
     <div className="flex flex-col h-screen w-screen">
       <h1 className="text-center p-3 text-2xl font-mono underline decoration-wavy underline-offset-4 text-gray-600">
         Trello
       </h1>
+      <button
+        className="h-10 w-10 bg-white flex items-center justify-center rounded-full fixed right-8 cursor-pointer"
+        onClick={() => logout()}
+      >
+        <i className="text-lg font-medium ri-logout-box-r-line"></i>
+      </button>
 
       {!cards?.length && (
         <div className="text-center flex items-center justify-center h-full w-full text-4xl font-mono text-gray-600">
