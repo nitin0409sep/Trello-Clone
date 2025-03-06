@@ -3,7 +3,7 @@ import Item from "./Item";
 import { AddItemDialog } from "./AddItemDialog";
 import { Card } from "../interface/Card.interface";
 
-const CardList = () => {
+const Cards = () => {
   const [cards, setCards] = useState<Card[] | []>([]);
 
   const [cardId, setCardId] = useState(-1);
@@ -116,7 +116,7 @@ const CardList = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen w-screen">
       <h1 className="text-center p-3 text-2xl font-mono underline decoration-wavy underline-offset-4 text-gray-600">
         Trello
       </h1>
@@ -193,4 +193,4 @@ const CardList = () => {
   );
 };
 
-export default CardList;
+export default Cards;

@@ -1,18 +1,22 @@
 import { Outlet, useNavigate } from "react-router-dom";
+import { useAuthContext } from "../context/auth.context";
 import { useEffect } from "react";
-import { useAuthContext } from "./context/auth.context";
 
-const App = () => {
+const Auth = () => {
   const { isLoggedIn } = useAuthContext();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("auth/login");
+    if (isLoggedIn) {
+      navigate("/");
     }
   }, [isLoggedIn, navigate]);
 
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 };
 
-export default App;
+export default Auth;
