@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import Item from "./Item";
+import { Item } from "./Item";
 import { AddItemDialog } from "./AddItemDialog";
 import { Card } from "../interface/Card.interface";
 import { showToast } from "../utility/toast";
@@ -16,8 +16,8 @@ const Cards = () => {
   const [editCardItem, setEditCardItem] = useState(false);
   const [itemId, setItemId] = useState(-1);
   const itemNameRef = useRef<HTMLInputElement | null>(null);
-  const [open, setOpen] = useState(false);
 
+  const [open, setOpen] = useState(false);
   const [isAddItem, setIsAddItem] = useState(false);
 
   const navigate = useNavigate();
@@ -138,6 +138,14 @@ const Cards = () => {
     navigate("auth/login");
   }
 
+  const updateItemsPosition = (cardId: number, newItems: string[]) => {
+    setCards((prevCards) =>
+      prevCards.map((card) =>
+        card.id === cardId ? { ...card, items: newItems } : card
+      )
+    );
+  };
+
   return (
     <div className="flex flex-col h-screen w-screen">
       <h1 className="text-center p-3 text-2xl font-mono underline decoration-wavy underline-offset-4 text-gray-600">
@@ -179,6 +187,7 @@ const Cards = () => {
                   handleDeleteCardItem,
                   cardNameRef,
                   itemNameRef,
+                  updateItemsPosition,
                 }}
               />
 

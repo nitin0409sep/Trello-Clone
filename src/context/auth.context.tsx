@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { AuthContextType } from "../interface/AuthContext.interface";
+import { AuthContextType } from "../interface/UserContext.interface";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType | null>(null);
