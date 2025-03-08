@@ -48,7 +48,7 @@ export const AddItemDialog: React.FC<AddItemDialogProps> = ({
           },
         }}
       >
-        <DialogTitle>{isAddItem ? "Item Value" : "Card Name"}</DialogTitle>
+        <DialogTitle>Add {isAddItem ? "Item Value" : "Card Name"}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus

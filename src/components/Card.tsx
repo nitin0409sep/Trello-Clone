@@ -49,40 +49,42 @@ const Cards = () => {
         card.id === id
           ? { ...card, name: cardNameRef.current?.value ?? card.name }
           : card
-      )
+      );
 
       setCardsInLocalStorage(cards);
       return cards;
-    }
-    );
+    });
 
     showToast("success", "Card Name Updated Successfully");
   }
 
-  function handleItemEdit(id: number, itemIdx: number) {
+  function handleItemEdit(id: number, itemIdx: number, itemValue: string) {
     if (!id || itemIdx === undefined) {
       showToast("error", "Card Id and Item Idx are required");
       return;
     }
 
-    if (!itemNameRef.current?.value) {
+    if (!itemValue) {
       showToast("error", "Item Name can't be empty");
       return;
     }
 
     setCards((prevCards) => {
-      const cards = prevCards.map((card) =>
-        card.id === cardId
-          ? { ...card, items: [...card.items, itemNameRef.current!.value] }
-          : card
-      )
-      setCardsInLocalStorage(cards);
-      return cards;
-    }
-    );
+      const updatedCards = [...prevCards];
+      updatedCards[id - 1] = {
+        ...updatedCards[id - 1],
+        items: [...updatedCards[id - 1].items],
+      };
+
+      updatedCards[id - 1].items[itemIdx] = itemValue;
+
+      setCardsInLocalStorage(updatedCards);
+
+      return updatedCards;
+    });
 
     showToast("success", "Item updated successfully");
-    setCardId(-1);
+    setCardId(-1); // Reset cardId if necessary
   }
 
   function handleDeleteCardItem(itemId: number, cardId: number) {
@@ -96,12 +98,11 @@ const Cards = () => {
         card.id === cardId
           ? { ...card, items: card.items.filter((_, idx) => idx !== itemId) }
           : card
-      )
+      );
 
       setCardsInLocalStorage(cards);
       return cards;
-    }
-    );
+    });
 
     showToast("success", "Card Deleted Successfully");
     setCardId(-1);
@@ -119,17 +120,15 @@ const Cards = () => {
     }
 
     setCards((prevCards) => {
-
       const cards = prevCards.map((card) =>
         card.id === cardId
           ? { ...card, items: [...card.items, itemValue] }
           : card
-      )
+      );
 
       setCardsInLocalStorage(cards);
       return cards;
-    }
-    );
+    });
 
     showToast("success", "Item Added Successfully");
 

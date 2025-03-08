@@ -11,13 +11,20 @@ interface EditItemDialogProps {
   setOpen: (val: boolean) => void;
   handleClose: (val: boolean) => void;
   isEditItem: boolean;
+  handleItemEdit: (id: number, idx: number, itemValue: string) => void;
+  cardId: number;
+  itemId: number;
+  item: string
 }
 
 export const EditItemDialog: React.FC<EditItemDialogProps> = ({
   open,
   setOpen,
   handleClose,
-  isEditItem,
+  handleItemEdit,
+  cardId,
+  itemId,
+  item
 }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,9 +32,13 @@ export const EditItemDialog: React.FC<EditItemDialogProps> = ({
     const formJson = Object.fromEntries(formData.entries());
     setOpen(false);
 
-    console.log(isEditItem);
+    handleItemEdit(cardId, itemId, String(formJson.item));
+  };
 
-    console.log(String(formJson.item));
+  const [itemValue, setItemValue] = React.useState(item);
+
+  const handleItemChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setItemValue(event.target.value);
   };
 
   return (
@@ -42,7 +53,7 @@ export const EditItemDialog: React.FC<EditItemDialogProps> = ({
           },
         }}
       >
-        <DialogTitle>"Item Value" </DialogTitle>
+        <DialogTitle>Edit Item Value</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -54,6 +65,8 @@ export const EditItemDialog: React.FC<EditItemDialogProps> = ({
             type="text"
             fullWidth
             variant="standard"
+            value={itemValue}
+            onChange={handleItemChange} 
           />
         </DialogContent>
         <DialogActions>
