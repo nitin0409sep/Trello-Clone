@@ -1,15 +1,6 @@
+import { } from "@dnd-kit/core";
 import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { SortableItem } from "./SortableItem";
@@ -28,27 +19,7 @@ const Item: React.FC<ItemProps> = ({
   handleItemEdit,
   handleDeleteCardItem,
   cardNameRef,
-  updateItemsPosition,
 }) => {
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleDragEnd = (event: { active: any; over: any }) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = card.items.indexOf(active.id);
-    const newIndex = card.items.indexOf(over.id);
-    const newItems = arrayMove(card.items, oldIndex, newIndex);
-
-    updateItemsPosition(card.id, newItems);
-  };
-
   return (
     <div className="flex flex-col flex-grow">
       <div className="flex justify-between items-center mb-4 gap-2">
@@ -97,41 +68,35 @@ const Item: React.FC<ItemProps> = ({
       </div>
 
       <div className="space-y-3 overflow-auto flex-grow max-h-60">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
+        <SortableContext
+          items={card.items}
+          strategy={verticalListSortingStrategy}
         >
-          <SortableContext
-            items={card.items}
-            strategy={verticalListSortingStrategy}
-          >
-            {!card.items.length && (
-              <>
-                <div className="flex items-center justify-center h-5/6">
-                  No Item Found
-                </div>
-              </>
-            )}
+          {!card.items.length && (
+            <>
+              <div className="flex items-center justify-center h-5/6">
+                No Item Found
+              </div>
+            </>
+          )}
 
-            {card.items &&
-              card.items.map((item, index) => (
-                <SortableItem
-                  key={item}
-                  item={item}
-                  index={index}
-                  card={card}
-                  cardId={cardId}
-                  itemId={itemId}
-                  handleItemEdit={handleItemEdit}
-                  handleDeleteCardItem={handleDeleteCardItem}
-                  setEditCardItem={setEditCardItem}
-                  setItemId={setItemId}
-                  setCardId={setCardId}
-                />
-              ))}
-          </SortableContext>
-        </DndContext>
+          {card.items &&
+            card.items.map((item, index) => (
+              <SortableItem
+                key={item}
+                item={item}
+                index={index}
+                card={card}
+                cardId={cardId}
+                itemId={itemId}
+                handleItemEdit={handleItemEdit}
+                handleDeleteCardItem={handleDeleteCardItem}
+                setEditCardItem={setEditCardItem}
+                setItemId={setItemId}
+                setCardId={setCardId}
+              />
+            ))}
+        </SortableContext>
       </div>
     </div>
   );

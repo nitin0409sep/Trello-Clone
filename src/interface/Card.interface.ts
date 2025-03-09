@@ -1,3 +1,5 @@
+import { Ref } from "react";
+
 export interface Card {
   id: number;
   name: string;
@@ -16,6 +18,5 @@ export interface ItemProps {
   handleCardNameEdit: (id: number) => void;
   handleItemEdit: (id: number, idx: number, itemValue: string) => void;
   handleDeleteCardItem: (idx: number, id: number) => void;
-  cardNameRef: any;
-  updateItemsPosition: (id: number, newItems: string[]) => void;
+  cardNameRef: Ref<HTMLInputElement | null>;
 }
