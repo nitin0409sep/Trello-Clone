@@ -181,33 +181,32 @@ const Cards = () => {
     const { active, over } = event;
     if (!over) return;
 
-    const activeCardId = cards.find((card) => {
-      return card.items.some((item) => item.id === active.id);
-    })?.id;
+    const activeCard = cards.find((card) =>
+      card.items.some((item) => item.id === active.id)
+    );
+    const overCard = cards.find((card) =>
+      card.items.some((item) => item.id === over.id)
+    );
 
-    const overCardId = cards.find((card) => {
-      return card.items.some((item) => item.id === over.id);
-    })?.id;
+    if (!activeCard || !overCard) return;
 
-    if (!activeCardId || !overCardId) return;
+    const activeCardId = activeCard.id;
+    const overCardId = overCard.id;
 
     setCards((prevCards) => {
-      return prevCards.map((card) => {
+      const updatedCards = prevCards.map((card) => {
         if (card.id === activeCardId && activeCardId === overCardId) {
-          // Same Card
-          if (card.items.some((item) => item.id === active.id)) {
-            const fromIndex = card.items.findIndex(
-              (item) => item.id === active.id
-            );
-            const toIndex = card.items.findIndex((item) => item.id === over.id);
+          const fromIndex = card.items.findIndex(
+            (item) => item.id === active.id
+          );
+          const toIndex = card.items.findIndex((item) => item.id === over.id);
 
-            if (fromIndex !== -1 && toIndex !== -1) {
-              const newItems = [...card.items];
-              const [movedItem] = newItems.splice(fromIndex, 1);
-              newItems.splice(toIndex, 0, movedItem);
+          if (fromIndex !== -1 && toIndex !== -1) {
+            const newItems = [...card.items];
+            const [movedItem] = newItems.splice(fromIndex, 1);
+            newItems.splice(toIndex, 0, movedItem);
 
-              return { ...card, items: newItems };
-            }
+            return { ...card, items: newItems };
           }
         } else if (card.id === activeCardId) {
           return {
@@ -215,12 +214,10 @@ const Cards = () => {
             items: card.items.filter((item) => item.id !== active.id),
           };
         } else if (card.id === overCardId) {
-          const activeCard = prevCards.find((c) => c.id === activeCardId);
-          const movedItem = activeCard?.items.find(
+          const movedItem = activeCard.items.find(
             (item) => item.id === active.id
           );
-
-          if (!movedItem) return card; // Safety check to avoid errors
+          if (!movedItem) return card;
 
           const overIndex = card.items.findIndex((item) => item.id === over.id);
           const newItems = [...card.items];
@@ -228,7 +225,7 @@ const Cards = () => {
           if (overIndex !== -1) {
             newItems.splice(overIndex, 0, movedItem);
           } else {
-            newItems.push(movedItem); // If `over.id` is not found, append to the end
+            newItems.push(movedItem);
           }
 
           return { ...card, items: newItems };
@@ -236,9 +233,10 @@ const Cards = () => {
 
         return card;
       });
-    });
 
-    setCardsInLocalStorage(cards);
+      setCardsInLocalStorage(updatedCards);
+      return updatedCards;
+    });
   };
 
   return (
