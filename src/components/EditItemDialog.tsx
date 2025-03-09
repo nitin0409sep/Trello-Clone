@@ -11,10 +11,10 @@ interface EditItemDialogProps {
   setOpen: (val: boolean) => void;
   handleClose: (val: boolean) => void;
   isEditItem: boolean;
-  handleItemEdit: (id: number, idx: number, itemValue: string) => void;
+  handleItemEdit: (id: number, idx: string, itemValue: string) => void;
   cardId: number;
-  itemId: number;
-  item: string
+  itemId: string;
+  item: { id: string; item: string };
 }
 
 export const EditItemDialog: React.FC<EditItemDialogProps> = ({
@@ -24,7 +24,7 @@ export const EditItemDialog: React.FC<EditItemDialogProps> = ({
   handleItemEdit,
   cardId,
   itemId,
-  item
+  item,
 }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,7 +38,7 @@ export const EditItemDialog: React.FC<EditItemDialogProps> = ({
   const [itemValue, setItemValue] = React.useState(item);
 
   const handleItemChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setItemValue(event.target.value);
+    setItemValue({ id: item.id, item: event.target.value });
   };
 
   return (
@@ -65,8 +65,8 @@ export const EditItemDialog: React.FC<EditItemDialogProps> = ({
             type="text"
             fullWidth
             variant="standard"
-            value={itemValue}
-            onChange={handleItemChange} 
+            value={itemValue.item}
+            onChange={handleItemChange}
           />
         </DialogContent>
         <DialogActions>

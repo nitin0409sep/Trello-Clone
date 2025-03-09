@@ -69,6 +69,7 @@ const Item: React.FC<ItemProps> = ({
 
       <div className="space-y-3 overflow-auto flex-grow max-h-60">
         <SortableContext
+          key={card.id}
           items={card.items}
           strategy={verticalListSortingStrategy}
         >
@@ -81,11 +82,11 @@ const Item: React.FC<ItemProps> = ({
           )}
 
           {card.items &&
-            card.items.map((item, index) => (
+            card.items.map((item) => (
               <SortableItem
-                key={item}
+                key={item.id}
+                index={item.id}
                 item={item}
-                index={index}
                 card={card}
                 cardId={cardId}
                 itemId={itemId}

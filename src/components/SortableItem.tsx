@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { EditItemDialog } from "./EditItemDialog";
+import { Card } from "../interface/Card.interface";
 
 export const SortableItem: React.FC<{
-  item: string;
-  index: number;
-  card: { id: number; name: string; items: string[] };
+  index: string;
+  item: { id: string; item: string };
+  card: Card;
   cardId: number;
-  itemId: number;
-  handleItemEdit: (id: number, idx: number, itemValue: string) => void;
-  handleDeleteCardItem: (idx: number, id: number) => void;
+  itemId: string;
+  handleItemEdit: (id: number, idx: string, itemValue: string) => void;
+  handleDeleteCardItem: (idx: string, id: number) => void;
   setEditCardItem: (value: boolean) => void;
-  setItemId: (id: number) => void;
+  setItemId: (id: string) => void;
   setCardId: (id: number) => void;
 }> = ({
   item,
@@ -27,7 +28,7 @@ export const SortableItem: React.FC<{
   setCardId,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: item });
+    useSortable({ id: item.id });
 
   const style = {
     transform: transform ? CSS.Transform.toString(transform) : undefined,
@@ -49,7 +50,7 @@ export const SortableItem: React.FC<{
         {...listeners}
         className="flex justify-between items-center bg-gray-200 p-2 rounded-lg flex-1"
       >
-        <span>{item}</span>
+        <span>{item.item}</span>
       </div>
 
       <div className="flex gap-2 pl-1">
@@ -85,7 +86,7 @@ export const SortableItem: React.FC<{
             handleItemEdit,
             cardId,
             itemId,
-            item
+            item,
           }}
         />
       </div>

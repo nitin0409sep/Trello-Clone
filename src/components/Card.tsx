@@ -6,7 +6,7 @@ import { showToast } from "../utility/toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/auth.context";
 import { closestCenter, DndContext } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
+import { v4 as uuidv4 } from "uuid";
 
 const Cards = () => {
   const [cards, setCards] = useState<Card[] | []>([]);
@@ -16,7 +16,7 @@ const Cards = () => {
   const cardNameRef = useRef<HTMLInputElement | null>(null);
 
   const [editCardItem, setEditCardItem] = useState(false);
-  const [itemId, setItemId] = useState(-1);
+  const [itemId, setItemId] = useState<string>("");
 
   const [open, setOpen] = useState(false);
   const [isAddItem, setIsAddItem] = useState(false);
@@ -59,7 +59,7 @@ const Cards = () => {
     showToast("success", "Card Name Updated Successfully");
   }
 
-  function handleItemEdit(id: number, itemIdx: number, itemValue: string) {
+  function handleItemEdit(id: number, itemIdx: string, itemValue: string) {
     if (!id || itemIdx === undefined) {
       showToast("error", "Card Id and Item Idx are required");
       return;
@@ -71,24 +71,22 @@ const Cards = () => {
     }
 
     setCards((prevCards) => {
-      const updatedCards = [...prevCards];
-      updatedCards[id - 1] = {
-        ...updatedCards[id - 1],
-        items: [...updatedCards[id - 1].items],
-      };
-
-      updatedCards[id - 1].items[itemIdx] = itemValue;
+      const updatedCards = prevCards.map((card: Card) => ({
+        ...card,
+        items: card.items.map((item) =>
+          item.id === itemIdx ? { ...item, item: itemValue } : item
+        ),
+      }));
 
       setCardsInLocalStorage(updatedCards);
-
       return updatedCards;
     });
 
     showToast("success", "Item updated successfully");
-    setCardId(-1); // Reset cardId if necessary
+    setCardId(-1);
   }
 
-  function handleDeleteCardItem(itemId: number, cardId: number) {
+  function handleDeleteCardItem(itemId: string, cardId: number) {
     if (itemId === undefined || cardId === undefined) {
       showToast("error", "Card Id and Item Idx are required");
       return;
@@ -97,7 +95,10 @@ const Cards = () => {
     setCards((prevCards) => {
       const cards = prevCards.map((card) =>
         card.id === cardId
-          ? { ...card, items: card.items.filter((_, idx) => idx !== itemId) }
+          ? {
+            ...card,
+            items: card.items.filter((item) => item.id !== itemId),
+          }
           : card
       );
 
@@ -121,11 +122,19 @@ const Cards = () => {
     }
 
     setCards((prevCards) => {
-      const cards = prevCards.map((card) =>
-        card.id === cardId
-          ? { ...card, items: [...card.items, itemValue] }
-          : card
-      );
+      const newItem = {
+        id: uuidv4(),
+        item: itemValue,
+      };
+
+      const cards = prevCards.map((card) => {
+        return card.id === cardId
+          ? {
+            ...card,
+            items: [...card.items, newItem],
+          }
+          : card;
+      });
 
       setCardsInLocalStorage(cards);
       return cards;
@@ -172,39 +181,59 @@ const Cards = () => {
     const { active, over } = event;
     if (!over) return;
 
-    const activeCardId = cards.find((card) =>
-      card.items.includes(active.id)
-    )?.id;
-    const overCardId = cards.find((card) => card.items.includes(over.id))?.id;
+    const activeCardId = cards.find((card) => {
+      return card.items.some((item) => item.id === active.id);
+    })?.id;
+
+    const overCardId = cards.find((card) => {
+      return card.items.some((item) => item.id === over.id);
+    })?.id;
 
     if (!activeCardId || !overCardId) return;
 
     setCards((prevCards) => {
       return prevCards.map((card) => {
         if (card.id === activeCardId && activeCardId === overCardId) {
-          // Reorder within the same card
-          return {
-            ...card,
-            items: arrayMove(
-              card.items,
-              card.items.indexOf(active.id),
-              card.items.indexOf(over.id)
-            ),
-          };
+          // Same Card
+          if (card.items.some((item) => item.id === active.id)) {
+            const fromIndex = card.items.findIndex(
+              (item) => item.id === active.id
+            );
+            const toIndex = card.items.findIndex((item) => item.id === over.id);
+
+            if (fromIndex !== -1 && toIndex !== -1) {
+              const newItems = [...card.items];
+              const [movedItem] = newItems.splice(fromIndex, 1);
+              newItems.splice(toIndex, 0, movedItem);
+
+              return { ...card, items: newItems };
+            }
+          }
         } else if (card.id === activeCardId) {
-          // Remove from the old card
           return {
             ...card,
-            items: card.items.filter((item) => item !== active.id),
+            items: card.items.filter((item) => item.id !== active.id),
           };
         } else if (card.id === overCardId) {
-          // Add to the new card
+          const activeCard = prevCards.find((c) => c.id === activeCardId);
+          const movedItem = activeCard?.items.find(
+            (item) => item.id === active.id
+          );
+
+          if (!movedItem) return card; // Safety check to avoid errors
+
+          const overIndex = card.items.findIndex((item) => item.id === over.id);
           const newItems = [...card.items];
-          const overIndex = card.items.indexOf(over.id);
-          newItems.splice(overIndex, 0, active.id);
+
+          if (overIndex !== -1) {
+            newItems.splice(overIndex, 0, movedItem);
+          } else {
+            newItems.push(movedItem); // If `over.id` is not found, append to the end
+          }
 
           return { ...card, items: newItems };
         }
+
         return card;
       });
     });
