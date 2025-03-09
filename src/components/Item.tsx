@@ -22,14 +22,12 @@ const Item: React.FC<ItemProps> = ({
   setItemId,
   card,
   editCardName,
-  editCardItem,
   cardId,
   itemId,
   handleCardNameEdit,
   handleItemEdit,
   handleDeleteCardItem,
   cardNameRef,
-  itemNameRef,
   updateItemsPosition,
 }) => {
   const sensors = useSensors(
@@ -123,10 +121,8 @@ const Item: React.FC<ItemProps> = ({
                   item={item}
                   index={index}
                   card={card}
-                  editCardItem={editCardItem}
                   cardId={cardId}
                   itemId={itemId}
-                  itemNameRef={itemNameRef}
                   handleItemEdit={handleItemEdit}
                   handleDeleteCardItem={handleDeleteCardItem}
                   setEditCardItem={setEditCardItem}

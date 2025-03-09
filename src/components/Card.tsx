@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Item } from "./Item";
 import { AddItemDialog } from "./AddItemDialog";
 import { Card } from "../interface/Card.interface";
@@ -24,8 +24,18 @@ const Cards = () => {
 
   const { setIsLoggedIn } = useAuthContext();
 
+  useEffect(() => {
+    const cards = JSON.parse(localStorage.getItem("cards")!);
+
+    if (cards && cards.length) setCards(cards);
+  }, []);
+
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const setCardsInLocalStorage = (cards: Card[]) => {
+    localStorage.setItem("cards", JSON.stringify(cards));
   };
 
   function handleCardNameEdit(id: number) {
@@ -34,39 +44,47 @@ const Cards = () => {
       return;
     }
 
-    setCards((prevCards) =>
-      prevCards.map((card) =>
+    setCards((prevCards) => {
+      const cards = prevCards.map((card) =>
         card.id === id
           ? { ...card, name: cardNameRef.current?.value ?? card.name }
           : card
-      )
-    );
+      );
+
+      setCardsInLocalStorage(cards);
+      return cards;
+    });
 
     showToast("success", "Card Name Updated Successfully");
   }
 
-  function handleItemEdit(id: number, itemIdx: number) {
+  function handleItemEdit(id: number, itemIdx: number, itemValue: string) {
     if (!id || itemIdx === undefined) {
       showToast("error", "Card Id and Item Idx are required");
       return;
     }
 
-    if (!itemNameRef.current?.value) {
+    if (!itemValue) {
       showToast("error", "Item Name can't be empty");
       return;
     }
 
-    setCards((prevCards) =>
-      prevCards.map((card) =>
-        card.id === cardId
-          ? { ...card, items: [...card.items, itemNameRef.current!.value] }
-          : card
-      )
-    );
+    setCards((prevCards) => {
+      const updatedCards = [...prevCards];
+      updatedCards[id - 1] = {
+        ...updatedCards[id - 1],
+        items: [...updatedCards[id - 1].items],
+      };
+
+      updatedCards[id - 1].items[itemIdx] = itemValue;
+
+      setCardsInLocalStorage(updatedCards);
+
+      return updatedCards;
+    });
 
     showToast("success", "Item updated successfully");
-
-    setCardId(-1);
+    setCardId(-1); // Reset cardId if necessary
   }
 
   function handleDeleteCardItem(itemId: number, cardId: number) {
@@ -75,13 +93,16 @@ const Cards = () => {
       return;
     }
 
-    setCards((prevCards) =>
-      prevCards.map((card) =>
+    setCards((prevCards) => {
+      const cards = prevCards.map((card) =>
         card.id === cardId
           ? { ...card, items: card.items.filter((_, idx) => idx !== itemId) }
           : card
-      )
-    );
+      );
+
+      setCardsInLocalStorage(cards);
+      return cards;
+    });
 
     showToast("success", "Card Deleted Successfully");
     setCardId(-1);
@@ -98,13 +119,16 @@ const Cards = () => {
       return;
     }
 
-    setCards((prevCards) =>
-      prevCards.map((card) =>
+    setCards((prevCards) => {
+      const cards = prevCards.map((card) =>
         card.id === cardId
           ? { ...card, items: [...card.items, itemValue] }
           : card
-      )
-    );
+      );
+
+      setCardsInLocalStorage(cards);
+      return cards;
+    });
 
     showToast("success", "Item Added Successfully");
 
@@ -119,14 +143,19 @@ const Cards = () => {
       return;
     }
 
-    setCards((prevCards) => [
-      ...prevCards,
-      {
-        id: prevCards.length + 1,
-        name: trimmedValue,
-        items: [],
-      },
-    ]);
+    setCards((prevCards) => {
+      const cards = [
+        ...prevCards,
+        {
+          id: prevCards.length + 1,
+          name: trimmedValue,
+          items: [],
+        },
+      ];
+
+      setCardsInLocalStorage(cards);
+      return cards;
+    });
 
     showToast("success", "Card Added Successfully");
   }
@@ -139,11 +168,14 @@ const Cards = () => {
   }
 
   const updateItemsPosition = (cardId: number, newItems: string[]) => {
-    setCards((prevCards) =>
-      prevCards.map((card) =>
+    setCards((prevCards) => {
+      const cards = prevCards.map((card) =>
         card.id === cardId ? { ...card, items: newItems } : card
-      )
-    );
+      );
+
+      setCardsInLocalStorage(cards);
+      return cards;
+    });
   };
 
   return (
