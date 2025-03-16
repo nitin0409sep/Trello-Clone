@@ -96,9 +96,9 @@ const Cards = () => {
       const cards = prevCards.map((card) =>
         card.id === cardId
           ? {
-            ...card,
-            items: card.items.filter((item) => item.id !== itemId),
-          }
+              ...card,
+              items: card.items.filter((item) => item.id !== itemId),
+            }
           : card
       );
 
@@ -130,9 +130,9 @@ const Cards = () => {
       const cards = prevCards.map((card) => {
         return card.id === cardId
           ? {
-            ...card,
-            items: [...card.items, newItem],
-          }
+              ...card,
+              items: [...card.items, newItem],
+            }
           : card;
       });
 
@@ -177,6 +177,7 @@ const Cards = () => {
     navigate("auth/login");
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
     if (!over) return;
